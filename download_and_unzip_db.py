@@ -13,7 +13,7 @@ from tools.printer import printer as pr
 
 def download_latest_release():
     """Download the latest release zip file from GitHub."""
-    pr.info("Downloading latest release from GitHub...")
+    pr.green("Downloading latest release from GitHub...")
 
     # GitHub API URL to get the latest release
     api_url = "https://api.github.com/repos/digitalpalidictionary/tipitaka-translation-db/releases/latest"
@@ -37,7 +37,7 @@ def download_latest_release():
         return download_url
 
     except Exception as e:
-        pr.error(f"Error getting latest release: {e}")
+        pr.red(f"Error getting latest release: {e}")
         return None
 
 
@@ -46,8 +46,8 @@ def ensure_zip_exists():
     pth = ProjectPaths()
 
     if not pth.tipitaka_translation_db_tarball.exists():
-        pr.info("Tipitaka translation zip not found")
-        pr.info("Downloading from GitHub releases...")
+        pr.green("Tipitaka translation zip not found")
+        pr.green("Downloading from GitHub releases...")
 
         download_url = download_latest_release()
         if not download_url:
@@ -62,7 +62,7 @@ def ensure_zip_exists():
             response.raise_for_status()
 
             total_size = int(response.headers.get("content-length", 0))
-            pr.info(
+            pr.green(
                 f"Downloading {total_size / (1024 * 1024):.1f} MB with {chunk_size / 1024:.0f}KB chunks..."
             )
 
@@ -77,10 +77,10 @@ def ensure_zip_exists():
                             f.write(chunk)
                             progress.update(task, advance=len(chunk))
 
-            pr.info("Download complete.")
+            pr.green("Download complete.")
 
         except Exception as e:
-            pr.error(f"Error downloading file: {e}")
+            pr.red(f"Error downloading file: {e}")
             raise
 
 
@@ -88,7 +88,7 @@ def unzip_file(zip_path: Path, destination_dir: Path):
     """
     Unzip a file to the destination directory.
     """
-    pr.green(f"unzipping {zip_path.name}")
+    pr.green_tmr(f"unzipping {zip_path.name}")
 
     if not zip_path.exists():
         raise FileNotFoundError(f"Zip file not found: {zip_path}")
@@ -104,7 +104,7 @@ def unzip_file(zip_path: Path, destination_dir: Path):
 def main():
     """Extract the Tipitaka translation DB."""
     pr.tic()
-    pr.title("unzip tipiṭaka translations db")
+    pr.yellow_title("unzip tipiṭaka translations db")
     pth = ProjectPaths()
 
     try:
@@ -118,8 +118,8 @@ def main():
         )
 
     except Exception as e:
-        pr.error("An error occurred during extraction")
-        pr.error(str(e))
+        pr.red("An error occurred during extraction")
+        pr.red(str(e))
 
     pr.toc()
 
