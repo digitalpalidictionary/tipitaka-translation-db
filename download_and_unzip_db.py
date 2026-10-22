@@ -95,8 +95,13 @@ def unzip_file(zip_path: Path, destination_dir: Path):
 
     destination_dir.mkdir(parents=True, exist_ok=True)
 
+    # The destination is this script's own folder, so a zip with any other
+    # member could overwrite this script. Extract the database file only.
+    expected = ProjectPaths().tipitaka_translation_db_path.name
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
-        zip_ref.extractall(destination_dir)
+        if expected not in zip_ref.namelist():
+            raise ValueError(f"{zip_path.name} does not contain {expected}")
+        zip_ref.extract(expected, destination_dir)
 
     pr.yes("ok")
 
